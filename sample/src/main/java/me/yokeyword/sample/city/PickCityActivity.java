@@ -37,6 +37,7 @@ public class PickCityActivity extends AppCompatActivity {
     private SearchFragment mSearchFragment;
     private SearchView mSearchView;
     private FrameLayout mProgressBar;
+    private HotCityHeaderAdapter hotCityHeaderAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +69,8 @@ public class PickCityActivity extends AppCompatActivity {
         });
 
         // set Center OverlayView
-        indexableLayout.setOverlayStyle_Center();
+        //indexableLayout.setOverlayStyle_Center();
+        indexableLayout.setOverlayStyle_MaterialDesign(getResources().getColor(R.color.font_orange));
 
         // set Listener
         adapter.setOnItemContentClickListener(new IndexableAdapter.OnItemContentClickListener<CityEntity>() {
@@ -94,7 +96,14 @@ public class PickCityActivity extends AppCompatActivity {
 
         // 热门城市
         //indexableLayout.addHeaderAdapter(new SimpleHeaderAdapter<>(adapter, "热", "热门城市", iniyHotCityDatas()));
-        indexableLayout.addHeaderAdapter(new HotCityHeaderAdapter("热", "热门城市", iniyHotCityDatas()));
+        hotCityHeaderAdapter = new HotCityHeaderAdapter("热", "热门城市", iniyHotCityDatas());
+        indexableLayout.addHeaderAdapter(hotCityHeaderAdapter);
+        hotCityHeaderAdapter.setOnCityClickListener(new HotCityHeaderAdapter.OnCityClickListener() {
+            @Override
+            public void onCityClick(int index, String name) {
+                ToastUtil.showShort(PickCityActivity.this, "选中:" + name + "  当前位置: " + 3 + "-" + index);
+            }
+        });
         // 定位
         final List<CityEntity> gpsCity = iniyGPSCityDatas();
         final SimpleHeaderAdapter gpsHeaderAdapter = new SimpleHeaderAdapter<>(adapter, "定", "当前城市", gpsCity);
@@ -111,51 +120,6 @@ public class PickCityActivity extends AppCompatActivity {
 
         // 搜索Demo
         initSearch();
-    }
-
-    /**
-     * 自定义的MenuHeader
-     */
-    class HotCityHeaderAdapter extends IndexableHeaderAdapter<HotCityC> {
-        private static final int TYPE = 1;
-
-        public HotCityHeaderAdapter(String index, String indexTitle, List<HotCityC> datas) {
-            super(index, indexTitle, datas);
-        }
-
-        @Override
-        public int getItemViewType() {
-            return TYPE;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateContentViewHolder(ViewGroup parent) {
-            return new HotCityHeaderAdapter.VH(LayoutInflater.from(PickCityActivity.this).inflate(R.layout.cp_view_hot_city, parent, false));
-        }
-
-        @Override
-        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, HotCityC entity) {
-            HotCityHeaderAdapter.VH vh = (HotCityHeaderAdapter.VH) holder;
-            final MyHotCityGridAdapter hotCityGridAdapter = new MyHotCityGridAdapter(holder.itemView.getContext(), entity.getCity());
-            vh.gridView.setAdapter(hotCityGridAdapter);
-            vh.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    if (onCityClickListener != null) {
-//                        onCityClickListener.onCityClick(hotCityGridAdapter.getItem(position));
-//                    }
-                }
-            });
-        }
-
-        private class VH extends RecyclerView.ViewHolder {
-            private GridView gridView;
-
-            public VH(View itemView) {
-                super(itemView);
-                gridView = (GridView) itemView.findViewById(R.id.gridview_hot_city);
-            }
-        }
     }
 
     private List<CityEntity> initDatas() {

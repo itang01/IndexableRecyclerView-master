@@ -32,6 +32,7 @@
             android:layout_height="match_parent"
             app:indexBar_background="#08000000"
             app:indexBar_layout_width="24dp"
+            app:indexBar_selectedTextColor="@color/font_orange"
             app:indexBar_textColor="@android:color/black"
             app:indexBar_textSpace="8dp"/>
 
